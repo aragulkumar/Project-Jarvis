@@ -68,3 +68,6 @@ path = "Project-Jarvis/it-had-been-a-wonderful-evening-and-what-i-needed-now-to-
 
 # Option 2: My Simple transcription Logic of processing the entire audio file at once with Whisper
 print("\nFull text (simple):", transcribe_audio_simple(path))
+
+# Option 3: Async transcription
+# print("\nFull text (async):", asyncio.run(Async_transcribe_audio(path)))
