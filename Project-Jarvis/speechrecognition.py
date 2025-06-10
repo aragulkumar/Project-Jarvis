@@ -1,8 +1,9 @@
 import whisper
 import os 
-from pydub import AudioSegment
-from pydub.silence import split_on_silence
-
+import asyncio
+import aiofiles
+# from pydub import AudioSegment
+# from pydub.silence import split_on_silence
 # Load Whisper model (you can choose: tiny, base, small, medium, large)
 
 model = whisper.load_model("base")
@@ -19,6 +20,14 @@ def transcribe_audio_simple(path):
     result = model.transcribe(path)
     return result["text"].strip()
 
+async def Async_transcribe_audio(path):
+    """
+    Whisper with async
+    """    
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, model.transcribe, path)
+    return result["text"].strip()
+    
 # def get_large_audio_transcription_on_silence(path):
 
 #     sound = AudioSegment.from_file(path)
