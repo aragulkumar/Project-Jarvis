@@ -1,48 +1,61 @@
-import speech_recognition as sr
+import whisper
 import os 
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 
-r = sr.Recognizer()
+# Load Whisper model (you can choose: tiny, base, small, medium, large)
 
-def transcripe_audio(path):
-    with sr.AudioFile(path) as source :
-        audio_listened = r.record(source)
-        text = r.recognize_google(audio_listened)
-    return text
+model = whisper.load_model("base")
 
-def get_large_audio_transcription_on_silence(path):
+def transcribe_audio(path):
+    result = model.transcribe(path)
+    return result["text"]
 
-    sound = AudioSegment.from_file(path)
+def transcribe_audio_simple(path):
+    """
+    Simple transcription function that processes the entire audio file at once.
+    Whisper is good at handling longer audio files without chunking.
+    """
+    result = model.transcribe(path)
+    return result["text"].strip()
 
-    chunks = split_on_silence(sound,
-                              min_silence_len= 500,
-                              silence_thresh= sound.dBFS-14,
-                              keep_silence=500,
+# def get_large_audio_transcription_on_silence(path):
+
+#     sound = AudioSegment.from_file(path)
+
+#     chunks = split_on_silence(sound,
+#                               min_silence_len= 500,
+#                               silence_thresh= sound.dBFS-14,
+#                               keep_silence=500,
                             
-    )
-    folder_name = "audio-chunks"
+#     )
+#     folder_name = "audio-chunks"
 
-    if not os.path.isdir(folder_name):
-        os.mkdir(folder_name)
-    whole_text = ""
+#     if not os.path.isdir(folder_name):
+#         os.mkdir(folder_name)
+#     whole_text = ""
 
-    for i, audio_chunk in enumerate(chunks, start=1):
-        chunk_filename = os.path.join(folder_name, f"chunk{i}.wav")
-        audio_chunk.export(chunk_filename,format="wav")
+#     for i, audio_chunk in enumerate(chunks, start=1):
+#         chunk_filename = os.path.join(folder_name, f"chunk{i}.wav")
+#         audio_chunk.export(chunk_filename,format="wav")
 
-        try:
-            text = transcripe_audio(chunk_filename)
+#         try:
+#             text = transcribe_audio(chunk_filename)
         
-        except sr.UnknownValueError as e :
-            print("Error:", str(e))
+#         except Exception as e :
+#             print("Error:", str(e))
 
-        else:
-            text = f"{text.capitalize()}."
-            print(chunk_filename, ":", text)
-            whole_text += text
+#         else:
+#             text = f"{text.strip().capitalize()}."
+#             print(chunk_filename, ":", text)
+#             whole_text += text
         
-        return whole_text
+#     return whole_text
 
 path = "Project-Jarvis/it-had-been-a-wonderful-evening-and-what-i-needed-now-to-give-it-the-perfect-ending-was-a-bit-of-the-old-ludwig-van.wav"
-print("\nFull text:", get_large_audio_transcription_on_silence(path))
+
+# Option 1: Your Logic of chunking and transcribing 
+#print("\nFull text (with chunking):", get_large_audio_transcription_on_silence(path))
+
+# Option 2: My Simple transcription Logic of processing the entire audio file at once with Whisper
+print("\nFull text (simple):", transcribe_audio_simple(path))
