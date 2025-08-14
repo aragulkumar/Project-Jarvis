@@ -1,1 +1,5 @@
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+env\Scripts\activate
+pip install -r requirements.txt
+deactivate
 
